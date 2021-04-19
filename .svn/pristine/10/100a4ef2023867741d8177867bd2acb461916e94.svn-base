@@ -1,0 +1,158 @@
+package de.uniwue.gdp.labyrinth;
+import de.uniwue.gdp.labyrinth.examples.Examples;
+import de.uniwue.gdp.labyrinth.model.Maze;
+import java.util.Arrays;
+
+public class Explorer {
+
+    public static void main(String[] args) {
+        Maze a1 = Examples.example01();
+        exploreMaze(a1);
+    }
+
+
+    //public String exploreMaze(Maze z)
+    private static void exploreMaze(Maze z) {
+
+        int width = z.width();
+        int height = z.height();
+        //System.out.println("Breite ist: " + width + " und Höhe: " + height);
+        // Array der Maze darstellt in Reihen und Spalten
+        int[][] mazearray = new int[height][width];
+        int x = 1;
+        int y = 1;
+        // Die 4 Maze außenwände
+        for (int reihe = 0; reihe < height; reihe++) {
+            for (int spalte = 0; spalte < height; spalte++) {
+                mazearray[reihe][spalte] = 1;
+            }
+        }
+
+        // Als erstes aktuelle Position als Gang makieren
+
+
+        // Zum Testen
+        /*
+        for (int i = 0; i < height; i++) {
+            System.out.println(Arrays.toString(mazearray[i]));
+        }
+        */
+
+
+        checkposition(z, x, y, mazearray);
+
+    }
+
+    public static int checkifKreuzung(Maze z) {
+
+        //Checke ob Kreuzung um makierung zu setzen
+        int help = 0;
+
+        if (!z.isWall(Maze.Direction.LEFT)) {
+            help ++;
+        }
+        if (!z.isWall(Maze.Direction.AHEAD)) {
+            help ++;
+        }
+        if (!z.isWall(Maze.Direction.RIGHT)) {
+            help ++;
+        }
+        if (!z.isWall(Maze.Direction.BACK)) {
+            help ++;
+        }
+
+        if (help > 1)
+            return 1;
+        else
+            return 2;
+    }
+
+
+    public static void checkposition(Maze z, int x, int y, int[][] mazearray) {
+
+
+        mazearray[x][y] = 0;
+
+        boolean marker = false;
+        if (checkifKreuzung(z) == 1) {
+            marker = true;
+        }
+
+        //Wenn Links frei ist, gehe nach Links
+        if (!z.isWall(Maze.Direction.LEFT) && (z.marks(Maze.Direction.LEFT) < 2)) {
+            move(z, mazearray, x, y, 0, marker);
+        }
+        if (!z.isWall(Maze.Direction.AHEAD) && (z.marks(Maze.Direction.AHEAD) < 2)) {
+            move(z, mazearray, x, y, 1, marker);
+        }
+        if (!z.isWall(Maze.Direction.RIGHT) && (z.marks(Maze.Direction.RIGHT) < 2)) {
+            move(z, mazearray, x, y, 2, marker);
+        }
+        if (!z.isWall(Maze.Direction.BACK) && (z.marks(Maze.Direction.BACK) < 2)) {
+            move(z, mazearray, x, y, 3, marker);
+        }
+
+    }
+
+    public static void move(Maze z, int[][] mazearray, int x, int y, int direction, boolean marker) {
+
+        if (direction == 0) {
+            if (marker == true) {
+                z.mark(Maze.Direction.LEFT);
+            }
+            z.walk(Maze.Direction.LEFT);
+            y ++;
+           // mazearray[x][y + 1] = 0;
+
+        }
+
+        if (direction == 1) {
+            if (marker == true) {
+                z.mark(Maze.Direction.AHEAD);
+            }
+            z.walk(Maze.Direction.AHEAD);
+            x ++;
+            //mazearray[x + 1][y] = 0;
+        }
+
+        if (direction == 2) {
+            if (marker == true) {
+                z.mark(Maze.Direction.RIGHT);
+            }
+            z.walk(Maze.Direction.RIGHT);
+            y --;
+           //mazearray[x][y - 1] = 0;
+        }
+
+        if (direction == 3) {
+            if (marker == true) {
+                z.mark(Maze.Direction.BACK);
+            }
+            z.walk(Maze.Direction.BACK);
+            x --;
+            //mazearray[x - 1][y] = 0;
+        }
+
+        checkposition(z, x, y, mazearray);
+    }
+}
+
+
+
+
+/*
+        Position[1][1]; mazearray[1][3] = 1
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+ */
